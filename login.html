@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura+ | Accedi o Registrati</title>
+
+    <style>
+        /* Stili Generali (molti simili alla dashboard) */
+        :root {
+            --primary-color: #9370DB; /* Viola chiaro */
+            --background-light: #F0F0F0;
+            --card-background: #FFFFFF;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-radius: 15px;
+            --input-border-radius: 8px; /* Bordi più piccoli per input */
+            --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --button-hover-dark: #7b59bf; /* Viola leggermente più scuro per hover */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-light);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Allinea in alto */
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-background);
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: 20px;
+            padding-bottom: 20px; /* Spazio in basso */
+        }
+
+        /* Banner superiore */
+        .welcome-banner {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .welcome-banner h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .welcome-banner p {
+            margin: 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Sezioni di form */
+        .form-section {
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input[type="email"],
+        .input-group input[type="password"] {
+            width: calc(100% - 20px); /* Padding */
+            padding: 12px 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--input-border-radius);
+            font-size: 1em;
+            box-sizing: border-box; /* Include padding e border nella larghezza */
+        }
+
+        .input-group input[type="email"]:focus,
+        .input-group input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(147, 112, 219, 0.3);
+        }
+
+        .bonus-message {
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-top: -5px; /* Avvicina al campo password */
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--input-border-radius);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-dark);
+        }
+
+        .error-message {
+            color: #d9534f; /* Rosso per errori */
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsrHAtIh5bsYDHa1wz0LMcmciChAoRikU",
+            authDomain: "myauraid-f03c6.firebaseapp.com",
+            projectId: "myauraid-f03c6",
+            storageBucket: "myauraid-f03c6.appspot.com",
+            messagingSenderId: "190478237725",
+            appId: "1:190478237725:web:0d39907473f511b85a06f4"
+        };
+
+        // Inizializza Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        // Ottieni i servizi di autenticazione e Firestore
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-banner">
+            <h1>Ciao!</h1>
+            <p>Ti diamo il benvenuto. Crea o accedi al tuo account Aura+ per iniziare</p>
+        </div>
+
+        <div class="form-section">
+            <h2>Registrati</h2>
+            <div class="input-group">
+                <input type="email" id="registerEmail" placeholder="Email...">
+            </div>
+            <div class="input-group">
+                <input type="password" id="registerPassword" placeholder="Password...">
+            </div>
+            <p class="bonus-message">15 di saldo di benvenuto! &#127881;</p>
+            <button id="registerBtn">Registrati</button>
+            <p id="registerError" class="error-message"></p>
+        </div>
+
+        <div class="form-section">
+            <h2>Accedi</h2>
+            <div class="input-group">
+                <input type="email" id="loginEmail" placeholder="Email...">
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder="Password...">
+            </div>
+            <button id="loginBtn">Accedi</button>
+            <p id="loginError" class="error-message"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerEmailInput = document.getElementById('registerEmail');
+            const registerPasswordInput = document.getElementById('registerPassword');
+            const registerBtn = document.getElementById('registerBtn');
+            const registerErrorElem = document.getElementById('registerError');
+
+            const loginEmailInput = document.getElementById('loginEmail');
+            const loginPasswordInput = document.getElementById('loginPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginErrorElem = document.getElementById('loginError');
+
+            // --- Funzione di Registrazione ---
+            registerBtn.addEventListener('click', async () => {
+                const email = registerEmailInput.value;
+                const password = registerPasswordInput.value;
+                registerErrorElem.textContent = ''; // Resetta messaggi di errore
+
+                if (!email || !password) {
+                    registerErrorElem.textContent = 'Per favore, inserisci email e password.';
+                    return;
+                }
+
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        saldo: 15,
+                        badge: 'Nuovo Utente',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    console.log('Utente registrato e dati salvati:', user);
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Errore durante la registrazione:', error);
+                    let errorMessage = 'Si è verificato un errore durante la registrazione.';
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = 'Questa email è già in uso.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'L\'indirizzo email non è valido.';
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = 'La password deve essere di almeno 6 caratteri.';
+                    }
+                    registerErrorElem.textContent = errorMessage;
+                }
+            });
+
+            // --- Funzione di Accesso ---
+            loginBtn.addEventListener('click', async () => {
+                const email = loginEmailInput.value;
+                const password = loginPasswordInput.value;
+                loginErrorElem.textContent = ''; // Resetta messaggi di errore
+
+                if (!email || !password) {
+                    loginErrorElem.textContent = 'Per favore, inserisci email e password.';
+                    return;
+                }
+
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    console.log('Accesso effettuato con successo!');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Errore durante l\'accesso:', error);
+                    let errorMessage = 'Credenziali non valide. Controlla email e password.';
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        errorMessage = 'Email o password non corretti.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'L\'indirizzo email non è valido.';
+                    }
+                    loginErrorElem.textContent = errorMessage;
+                }
+            });
+
+            // --- Reindirizzamento se l'utente è già loggato ---
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    console.log("Utente già loggato, reindirizzamento alla dashboard.");
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
