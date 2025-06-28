@@ -261,31 +261,28 @@
             // --- Gestione della navigazione tra le pagine ---
             if (taskCard) {
                 taskCard.addEventListener('click', () => {
-                    window.location.href = 'tasks.html'; // Supponiamo che la pagina delle task si chiami tasks.html
+                    window.location.href = 'tasks.html';
                 });
             }
 
             if (supportCard) {
                 supportCard.addEventListener('click', () => {
-                    window.location.href = 'support.html'; // Supponiamo support.html
+                    window.location.href = 'support.html';
                 });
             }
 
             if (settingsCard) {
                 settingsCard.addEventListener('click', () => {
-                    window.location.href = 'settings.html'; // Supponiamo settings.html
+                    window.location.href = 'settings.html';
                 });
             }
 
             // --- Logica Firebase ---
-            // Monitora lo stato di autenticazione dell'utente
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    // Utente autenticato
                     userEmailElem.textContent = user.email;
                     userUidElem.textContent = user.uid;
 
-                    // Recupera il saldo e il badge da Firestore
                     const userDocRef = db.collection('users').doc(user.uid);
                     try {
                         const doc = await userDocRef.get();
@@ -297,7 +294,6 @@
                             userBalanceElem.innerHTML = `${saldo} di saldo <a href="#" id="saldoLink">Vai alla pagina saldo</a>`;
                             userBadgeElem.textContent = badge;
 
-                            // Aggiungi l'event listener per il link del saldo dopo che l'elemento è stato creato
                             const saldoLink = document.getElementById('saldoLink');
                             if (saldoLink) {
                                 saldoLink.addEventListener('click', (e) => {
@@ -305,7 +301,6 @@
                                     window.location.href = 'balance.html';
                                 });
                             }
-
                         } else {
                             console.log("Nessun dato utente trovato in Firestore per questo UID.");
                             userBalanceElem.innerHTML = `0 di saldo <a href="#" id="saldoLink">Vai alla pagina saldo</a>`;
@@ -331,9 +326,8 @@
                         }
                     }
                 } else {
-                    // Utente non autenticato, reindirizza alla pagina di login
                     console.log("Utente non autenticato. Reindirizzamento alla pagina di login...");
-                    window.location.href = 'login.html'; // Assumendo che la tua pagina di login si chiami login.html
+                    window.location.href = 'login.html';
                 }
             });
         });
